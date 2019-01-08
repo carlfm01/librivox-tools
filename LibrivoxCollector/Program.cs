@@ -11,10 +11,11 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace LibrivoxCollector
-{
-
+{ 
     public class Program
     {
+        private const LanguageEnum Lang = LanguageEnum.Spanish;
+        private const int LanguageAvailablePages = 20;
 
         [STAThread]
         public static void Main(string[] args)
@@ -22,16 +23,14 @@ namespace LibrivoxCollector
             HtmlParser htmlParser = new HtmlParser();
             HtmlWeb webClient = new HtmlWeb
             {
-                BrowserTimeout = TimeSpan.FromMinutes(2)
-            }; 
-            List<Book> books = LoadBooks(htmlParser, webClient, LanguageEnum.Spanish, 20);
-
-
-            foreach (Book book in books.Where(x => x.BookMeta.ToLower().Contains(LanguageEnum.Spanish.ToString().ToLower()))) //filters multiling
+                BrowserTimeout = TimeSpan.FromMinutes(4)
+            };
+            List<Book> books = LoadBooks(htmlParser, webClient, Lang, LanguageAvailablePages);
+            foreach (Book book in books.Where(x => x.BookMeta.ToLower().Contains(Lang.ToString().ToLower()))) //filters multiling
             {
                 LoadBookMeta(book, htmlParser, webClient);
             }
-            File.WriteAllText("books-es.json", JsonConvert.SerializeObject(books), Encoding.UTF8);
+            File.WriteAllText($"books-{Lang.ToString()}.json", JsonConvert.SerializeObject(books), Encoding.UTF8);
 
 
 
@@ -77,22 +76,32 @@ namespace LibrivoxCollector
             }
             var chapterNodes = document.QuerySelector("table.chapter-download").QuerySelector("tbody").QuerySelectorAll("tr");
 
+            var columns = document.QuerySelector("table.chapter-download").QuerySelector("thead").QuerySelectorAll("th").Select(x => x.TextContent).ToList();
+
+            int chapterIndex = columns.FindIndex(x => x.ToLower().Contains("chapter"));
+            int sectionIndex = columns.FindIndex(x => x.ToLower().Contains("section"));
+            int readerIndex = columns.FindIndex(x => x.ToLower().Contains("reader"));
+            int durationIndex = columns.FindIndex(x => x.ToLower().Contains("time"));
+            int languageIndex = columns.FindIndex(x => x.ToLower().Contains("language"));
+            int sourceTextIndex = columns.FindIndex(x => x.ToLower().Contains("source"));
+
             foreach (var chapterNode in chapterNodes)
             {
                 var chapterInfo = chapterNode.QuerySelectorAll("td").ToArray();
-                string chapterMp3 = chapterInfo[1].QuerySelector("a").GetAttribute("href");
-                string chapterName = chapterInfo[1].QuerySelector("a").TextContent;
-                AngleSharp.Dom.IElement readerNameElement = chapterInfo[2].QuerySelector("a");
-                string readerName = readerNameElement !=null ? readerNameElement.TextContent:"";
-                string chapterDuration = chapterInfo[3].TextContent;
+                string chapterMp3 = chapterIndex != -1 ? chapterInfo[chapterIndex].QuerySelector("a").GetAttribute("href") : string.Empty;
+                string chapterName = chapterIndex != -1 ? chapterInfo[chapterIndex].QuerySelector("a").TextContent : string.Empty;
+                AngleSharp.Dom.IElement readerNameElement = chapterInfo[readerIndex].QuerySelector("a");
+                string readerName = readerNameElement != null ? readerNameElement.TextContent : "";
+                string chapterDuration = chapterInfo[durationIndex].TextContent;
 
                 book.Chapters.Add(new Chapter
                 {
                     AudioLink = chapterMp3,
-                    Section = chapterInfo[0].TextContent,
+                    Section = chapterInfo[sectionIndex].TextContent,
                     Duration = chapterDuration,
                     Name = chapterName,
-                    Reader = readerName
+                    Reader = readerName,
+                    TextSource = sourceTextIndex != -1 ? chapterInfo[sourceTextIndex].GetAttribute("href") : string.Empty
                 });
             }
         }
@@ -136,7 +145,6 @@ namespace LibrivoxCollector
                             //Console.Clear();
                             Console.WriteLine($"Book found: {book.Title}");
                             Console.WriteLine($"Books count: {books.Count}");
-                           
                         }
                     }
                 }
@@ -172,6 +180,6 @@ namespace LibrivoxCollector
             });
             result = false;
             return document;
-        } 
+        }
     }
 }

@@ -29,5 +29,9 @@
         /// Audio URL of the mp3.
         /// </summary>
         public string AudioLink { get; set; }
+        /// <summary>
+        /// Source of the chapter text.
+        /// </summary>
+        public string TextSource { get; set; }
     }
 }
