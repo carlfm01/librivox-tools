@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibrivoxCollector", "LibrivoxCollector\LibrivoxCollector.csproj", "{784CA832-6C46-4628-9EC5-D5EDF9193D2E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.Cutter", "Speech.Cutter\Speech.Cutter.csproj", "{353B4326-C9DD-4B3E-80D0-7DD9BE7145F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.Cutter.Console", "Speech.Cutter.Console\Speech.Cutter.Console.csproj", "{67B100A4-3C07-4D71-A678-88E577DDE87C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{784CA832-6C46-4628-9EC5-D5EDF9193D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{784CA832-6C46-4628-9EC5-D5EDF9193D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{784CA832-6C46-4628-9EC5-D5EDF9193D2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{353B4326-C9DD-4B3E-80D0-7DD9BE7145F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{353B4326-C9DD-4B3E-80D0-7DD9BE7145F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{353B4326-C9DD-4B3E-80D0-7DD9BE7145F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{353B4326-C9DD-4B3E-80D0-7DD9BE7145F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67B100A4-3C07-4D71-A678-88E577DDE87C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67B100A4-3C07-4D71-A678-88E577DDE87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67B100A4-3C07-4D71-A678-88E577DDE87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67B100A4-3C07-4D71-A678-88E577DDE87C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
