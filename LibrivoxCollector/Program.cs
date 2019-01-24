@@ -14,26 +14,42 @@ namespace LibrivoxCollector
 { 
     public class Program
     {
-        private const LanguageEnum Lang = LanguageEnum.Spanish;
-        private const int LanguageAvailablePages = 20;
-
         [STAThread]
         public static void Main(string[] args)
         {
-            HtmlParser htmlParser = new HtmlParser();
-            HtmlWeb webClient = new HtmlWeb
+            string lang = GetArgument(args, "--lang");
+            string pages = GetArgument(args, "--pages");
+            Dictionary<string, LanguageEnum> langMappings = new Dictionary<string, LanguageEnum>()
             {
-                BrowserTimeout = TimeSpan.FromMinutes(4)
+                { "en", LanguageEnum.English },
+                { "es", LanguageEnum.Spanish },
+                { "fr", LanguageEnum.French },
+                { "it", LanguageEnum.Italian },
+                { "de", LanguageEnum.German },
             };
-            List<Book> books = LoadBooks(htmlParser, webClient, Lang, LanguageAvailablePages);
-            foreach (Book book in books.Where(x => x.BookMeta.ToLower().Contains(Lang.ToString().ToLower()))) //filters multiling
+
+            if (!string.IsNullOrWhiteSpace(pages) && !string.IsNullOrWhiteSpace(lang))
             {
-                LoadBookMeta(book, htmlParser, webClient);
+                var langEnum = langMappings[lang];
+                var pagesCount = Convert.ToInt32(pages);
+                HtmlParser htmlParser = new HtmlParser();
+                HtmlWeb webClient = new HtmlWeb
+                {
+                    BrowserTimeout = TimeSpan.FromMinutes(4)
+                };
+                List<Book> books = LoadBooks(htmlParser, webClient, langEnum, pagesCount);
+                foreach (Book book in books.Where(x => x.BookMeta.ToLower().Contains(langEnum.ToString().ToLower()))) //filters multiling
+                {
+                    LoadBookMeta(book, htmlParser, webClient);
+                }
+                File.WriteAllText($"books-{langEnum.ToString()}.json", JsonConvert.SerializeObject(books), Encoding.UTF8);
             }
-            File.WriteAllText($"books-{Lang.ToString()}.json", JsonConvert.SerializeObject(books), Encoding.UTF8);
-
-
-
+            else
+            {
+                Console.WriteLine($"Missing argument(s):" +
+                    $" {CheckArgument(lang, nameof(lang))}" +
+                    $" {CheckArgument(pages, nameof(pages))}");
+            }
 
             /*Just a test*/
             //List<Book> books = JsonConvert.DeserializeObject<List<Book>>(File.ReadAllText("books-es.json", Encoding.UTF8));
@@ -181,5 +197,15 @@ namespace LibrivoxCollector
             result = false;
             return document;
         }
+        private static string CheckArgument(string value, string argumentName) => string.IsNullOrWhiteSpace(value) ? argumentName : string.Empty;
+
+        /// <summary>
+        /// Get the value of an argurment.
+        /// </summary>
+        /// <param name="args">Argument list.</param>
+        /// <param name="option">Key of the argument.</param>
+        /// <returns>Value of the argument.</returns>
+        static string GetArgument(IEnumerable<string> args, string option)
+        => args.SkipWhile(i => i != option).Skip(1).Take(1).FirstOrDefault();
     }
 }
