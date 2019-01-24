@@ -25,7 +25,26 @@ Command example:
 ```
 python cutter.py -sentences "as soon as i reached the meeting place i would find out the wagon to which i was assigned,and if i sat down and said nothing he would probably soon ask me if i wanted anything to eat,and perhaps nodding to me,he would usually grumble savagely and profanely about my having been put with his wagon,after supper i would roll up in my bedding as soon as possible" -input temp.wav -output sentences -confidence 0,69 -lang en
 ```
+### Using the C# library 
 
+Example:
+```cs
+using (var _speechCutter = new SpeechCutterClient("en"))
+{
+     _speechCutter.CutSentences(new string[]
+     {
+             "as soon as i reached the meeting place i would find out the wagon to which i was assigned",
+             "and if i sat down and said nothing he would probably soon ask me if i wanted anything to eat",
+             "and perhaps nodding to me",
+             "he would usually grumble savagely and profanely about my having been put with his wagon",
+             "after supper i would roll up in my bedding as soon as possible"
+      },
+     "temp.wav",
+     "sentences",
+     0.68,
+     Formats.Wav);          
+}
+```
 
 ## Sentence recommendations
 
