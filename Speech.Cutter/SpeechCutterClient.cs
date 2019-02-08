@@ -143,18 +143,20 @@ namespace Speech.Cutter
                 {
                     string fileName = Guid.NewGuid().ToString();
                     string command = string.Empty;
+                    var duration = recognizedSentence.Duration - new TimeSpan(0, 0, 0, 0, 60);
+                    var offset = recognizedSentence.Offset - new TimeSpan(0, 0, 0, 0, 80);
                     switch (targetFormat)
                     {
                         case Formats.Wav:
-                            command = $" -ss {recognizedSentence.Offset.ToString().Replace(",", ".")}" +
-                                $" -t {recognizedSentence.Duration.ToString().Replace(",", ".")}" +
+                            command = $" -ss {offset.ToString().Replace(",", ".")}" +
+                                $" -t {duration.ToString().Replace(",", ".")}" +
                                 $" -i \"{inputWav}\" -f wav -acodec pcm_s16le -ac 1" +
                                 $" -sample_fmt s16 -ar 16000 \"{outDirectory}/{fileName}.wav\"";
                             break;
                         case Formats.Mp3:
-                            command = $" -ss {recognizedSentence.Offset.ToString().Replace(",", ".")}" +
+                            command = $" -ss {offset.ToString().Replace(",", ".")}" +
                                 " -vn -f mp3 -ar 16000 -acodec libmp3lame" +
-                                $" -t {recognizedSentence.Duration.ToString().Replace(",", ".")}" +
+                                $" -t {duration.ToString().Replace(",", ".")}" +
                                 $" -i \"{inputWav}\" \"{outDirectory}/{fileName}.mp3\"";
                             break;
                     }
